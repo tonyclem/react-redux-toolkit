@@ -4,12 +4,13 @@ import cartItems from "../../cart-items";
 const url = "https://course-api.com/react-useReducer-cart-project";
 
 const initialState = {
-  cartItems: cartItems,
+  cartItems: cartItems || [],
   amount: 0,
   total: 0,
   isLoading: true,
 };
 
+// fetch data from backend
 export const getCartItems = createAsyncThunk("cart/getCartItems", () => {
   return fetch(url)
     .then((response) => response.json())
@@ -46,8 +47,8 @@ const cartSlice = createSlice({
       state.cartItems = state.cartItems.filter((item) => item.id !== itemId);
     },
     increase: (state, action) => {
-      const itemId = action.payload;
-      const cartItem = state.cartItems.find((item) => item.id === itemId.id);
+      const itemId = action.payload.id;
+      const cartItem = state.cartItems.find((item) => item.id === itemId);
       cartItem.amount = cartItem.amount + 1;
     },
     decrease: (state, { payload }) => {
@@ -55,14 +56,14 @@ const cartSlice = createSlice({
       cartItem.amount = cartItem.amount - 1;
     },
     calculateTotals: (state) => {
-      let amount = 0;
-      let total = 0;
+      let amounts = 0;
+      let totals = 0;
       state.cartItems.forEach((item) => {
-        amount += item.amount;
-        total += item.amount * item.price;
+        amounts += item.amount;
+        totals += item.amount * item.price;
       });
-      state.amount = amount;
-      state.total = total;
+      state.amount = amounts;
+      state.total = totals;
     },
   },
   extraReducers: {
